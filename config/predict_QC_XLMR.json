@@ -1,0 +1,16 @@
+{
+  "task_name": "QC",
+  "model_name_or_path": "./models/baseline_QC_XLMR",
+  "output_dir": "./models/baseline_QC_XLMR",
+  "outputs": "./predictions/submit_QC_XLMR.txt",
+  "max_seq_length": 128,
+  "per_device_train_batch_size": 8,
+  "per_device_eval_batch_size": 256,
+  "do_train": 0,
+  "do_eval": 0,
+  "do_predict": 1,
+  "train_file": "data/train_QC.txt",
+  "validation_file": "data/train_QC.txt",
+  "test_file": "data/dev_QC.txt",
+  "use_fast_tokenizer": 0
+}
