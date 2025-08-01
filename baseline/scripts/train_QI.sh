@@ -1,0 +1,1 @@
+python -m torch.distributed.launch --nproc_per_node 1 --nnodes=1 --master_port=8889 train.py config/train_QI.json
