@@ -37,9 +37,10 @@ class SentencePairDataset(Dataset):
         2.  **Translated Query**: The English translation of the user's search term.
         3.  **Product Item Details**: Information about the product, such as its title, category, and attributes.
 
-        Based on this information, you must classify the relevance into one of two categories:
+        Based on this information, you must classify the relevance into one of three categories:
 
         - **Exact**: The product is a perfect or highly relevant match for the user's search query. It directly fulfills the user's intent.
+        - **Partial**: The product is related to the query but is not a direct match. It could be an accessory, a compatible product, a different model, or a substitute.
         - **Irrelevant**: The product has no logical connection to the search query.
 
         Analyze the product details against both the original and translated queries to determine the most accurate classification.
@@ -56,7 +57,6 @@ class SentencePairDataset(Dataset):
             )
         else:
             sentence1 = str(item[self.sentence1_str])
-        # sentence1 = self.query_instruction + '\n' + 'Query: ' + sentence1
         sentence2 = str(item[self.sentence2_str])
         label = item['label']
         encoding = self.tokenizer(
@@ -83,7 +83,6 @@ class SentencePairPredictDataset(SentencePairDataset):
             )
         else:
             sentence1 = str(item[self.sentence1_str])
-        # sentence1 = self.query_instruction + '\n' + 'Query: ' + sentence1
         sentence2 = str(item[self.sentence2_str])
         encoding = self.tokenizer(
             sentence1,

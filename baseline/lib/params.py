@@ -30,6 +30,14 @@ class DataArguments:
             return 'origin_query', 'category_path'
         elif task_name == 'QI':
             return 'origin_query', 'item_title'
+        elif task_name == 'QC_en':
+            return 'translated_query', 'category_path'
+        elif task_name == 'QI_en':
+            return 'translated_query', 'item_title'
+        elif task_name == 'QC_2lang':
+            return 'origin_query,translated_query', 'category_path'
+        elif task_name == 'QI_2lang':
+            return 'origin_query,translated_query', 'item_title'
         else:
             raise ValueError(f"Unknown task: {task_name}")
 
@@ -66,7 +74,6 @@ def load_parameters():
             config_dict['output_dir'] = './temp_output'
 
         model_args, data_args, training_args = parser.parse_dict(config_dict)
-    
     elif len(sys.argv) >= 3 and not sys.argv[1].endswith(".json") and all(arg.endswith(".json") for arg in sys.argv[2:]):
         # Overwrite model_name_or_path from command line, load configs from JSON files
         model_name_or_path = sys.argv[1]

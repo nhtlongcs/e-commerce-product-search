@@ -3,6 +3,8 @@ Model loading and configuration.
 """
 
 import os
+import re
+
 import torch
 from transformers import (
     AutoModelForSequenceClassification,
@@ -64,10 +66,14 @@ def load_model_and_tokenizer(model_args, num_labels=2):
         num_labels=num_labels,
         problem_type="single_label_classification"
     )
-    
+    model_modules = str(model.modules)
+    pattern = r'\((\w+)\): Linear'
+    linear_layer_names = list(re.findall(pattern, model_modules))
+
     # Apply PEFT if configured
     if model_args.use_lora:
         print("Applying LoRA configuration")
+        print(f"Linear layers found: {linear_layer_names}")
         if not model_args.lora_target_modules:
             raise ValueError("lora_target_modules must be specified when use_lora=True")
         
@@ -76,9 +82,9 @@ def load_model_and_tokenizer(model_args, num_labels=2):
             target_modules=model_args.lora_target_modules,
             modules_to_save=model_args.lora_modules_to_save,
             inference_mode=False,
-            r=8,
+            r=16,
             lora_alpha=32,
-            lora_dropout=0.1,
+            lora_dropout=0.01,
         )
         model = get_peft_model(model, peft_config)
         print(f"LoRA applied with target modules: {model_args.lora_target_modules}")

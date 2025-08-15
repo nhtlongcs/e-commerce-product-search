@@ -7,7 +7,7 @@ import numpy as np
 from sklearn.metrics import f1_score
 from transformers import EvalPrediction
 import wandb
-
+from pathlib import Path
 
 def compute_metrics(p: EvalPrediction):
     """Compute F1 score for evaluation."""
@@ -17,8 +17,9 @@ def compute_metrics(p: EvalPrediction):
 
 def create_run_name(model_args, data_args):
     """Create a unique run name based on model and task."""
-    model_name = model_args.model_name_or_path.split('/')[-1].replace('-', '_').lower()
+    model_name = Path(model_args.model_name_or_path).name.replace('-', '_').replace('.','_').lower()
     run_name = f"{model_name}-{data_args.task_name}-{data_args.max_seq_length}"
+    print(f"Run name: {run_name}")
     if data_args.fold_id is not None:
         run_name += f"-fold{data_args.fold_id}"
     return run_name, model_name
@@ -87,16 +88,14 @@ def setup_wandb(model_args, data_args, training_args, tags=None):
     return run_name
 
 
-def save_training_config(training_args, run_name):
+def save_training_config(json_args, output_dir, filename='training_args.json'):
     """Save training configuration to file."""
     import json
-    
-    output_dir = os.path.join(training_args.output_dir, 'runs', run_name)
     os.makedirs(output_dir, exist_ok=True)
-    
-    config_path = os.path.join(output_dir, 'training_args.json')
+
+    config_path = os.path.join(output_dir, filename)
     with open(config_path, 'w') as f:
-        json.dump(json.loads(training_args.to_json_string()), f, indent=4)
+        json.dump(json_args, f, indent=4)
     
     print(f"Training config saved to: {config_path}")
 
