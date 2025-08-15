@@ -9,7 +9,8 @@ from lib.model import load_model_and_tokenizer
 from lib.dataset import create_datasets
 from lib.trainer import create_trainer, run_training
 from lib.utils import create_run_name, setup_wandb, save_training_config, cleanup_wandb
-
+from dataclasses import asdict
+import json
 
 def main():
     """Main training function."""
@@ -20,8 +21,8 @@ def main():
         print("="*60)
         print(f"Starting training for task: {data_args.task_name}")
         print(f"Model: {model_args.model_name_or_path}")
-        print(f"Output directory: {training_args.output_dir}")
         print(f"Cross-validation fold: {data_args.fold_id}")
+        print(f"Using FP16: {training_args.fp16}")
         print("="*60)
         
         # Load model and tokenizer
@@ -46,9 +47,12 @@ def main():
             training_args.report_to = original_report_to  # Restore original setting
         else:
             run_name, _ = create_run_name(model_args, data_args)
+        training_args.output_dir = os.path.join(training_args.output_dir, run_name)
+        print(f"Output directory: {training_args.output_dir}")     
+        save_training_config(json.loads(training_args.to_json_string()), training_args.output_dir)
+        save_training_config(asdict(model_args), training_args.output_dir, filename='model_args.json')
+        save_training_config(asdict(data_args), training_args.output_dir, filename='data_args.json')
         
-        save_training_config(training_args, run_name)
-
         # Run training workflow
         results = run_training(trainer=trainer, training_args=training_args)
         

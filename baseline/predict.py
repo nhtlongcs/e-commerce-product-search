@@ -6,9 +6,13 @@ import json
 import torch
 from torch.utils.data import DataLoader
 from tqdm import tqdm
-from lib.params import load_prediction_parameters
+from lib.params import load_parameters
 from lib.model import load_model_and_tokenizer
 from lib.dataset import create_datasets
+from pathlib import Path
+from accelerate import Accelerator
+
+from accelerate.utils import gather_object
 
 def sentence_pair_collate_fn(batch, sentence1_str, sentence2_str, tokenizer):
     """
@@ -23,7 +27,13 @@ def sentence_pair_collate_fn(batch, sentence1_str, sentence2_str, tokenizer):
     attention_mask = [item['attention_mask'] for item in batch]
     ids = [item['id'] for item in batch]
     languages = [item['language'] for item in batch]
+    # if ',' in sentence1_str:
+    #     # hard code (origin_query, translated) -> only use origin query
+    #     sentence1 = [item[sentence1_str].split('-')[0].strip() for item in batch]
+    #     sentence1_str = sentence1_str.split(',')[0].strip()
+    # else:
     sentence1 = [item[sentence1_str] for item in batch]
+    queries = [item['origin_query'] for item in batch]
     sentence2 = [item[sentence2_str] for item in batch]
     padded = tokenizer.pad(
         {'input_ids': input_ids, 'attention_mask': attention_mask},
@@ -34,14 +44,15 @@ def sentence_pair_collate_fn(batch, sentence1_str, sentence2_str, tokenizer):
         'input_ids': padded['input_ids'],
         'attention_mask': padded['attention_mask'],
         'id': ids,
+        'origin_query': queries,
         sentence1_str: sentence1,
         sentence2_str: sentence2,
         'language': languages
     }
 
-def run_prediction(model, tokenizer, test_dataset, data_args, batch_size, sentence1_str, sentence2_str):
+
+def run_prediction(model, tokenizer, test_dataset, data_args, batch_size, sentence1_str, sentence2_str, accelerator):
     """Run prediction on test dataset and save results."""
-    print("Starting prediction...")
     collator = lambda batch: sentence_pair_collate_fn(batch, sentence1_str, sentence2_str, tokenizer)
     # Create dataloader
     dataloader = DataLoader(
@@ -51,58 +62,86 @@ def run_prediction(model, tokenizer, test_dataset, data_args, batch_size, senten
         collate_fn=collator
     )
     
-    # Run prediction
     model.eval()
-    print(f"Saving predictions to {data_args.outputs}...")
+    model, dataloader = accelerator.prepare(model, dataloader)
+
+    results_list = []
+
+    # Chuyển model & dataloader sang Accelerate
+    if accelerator.is_local_main_process:
+        print(f"Starting predict {len(test_dataset)} examples with batch size {batch_size}...")
+
     with open(data_args.outputs, 'w', encoding='utf-8') as f:
-        for batch in tqdm(dataloader, desc="Predicting"):
-            # Predict
-            batch['input_ids'] = batch['input_ids'].to(model.device)
-            batch['attention_mask'] = batch['attention_mask'].to(model.device)
+        for batch in tqdm(dataloader, desc="Predicting", disable=not accelerator.is_local_main_process):
             with torch.no_grad():
                 outputs = model(input_ids=batch['input_ids'], attention_mask=batch['attention_mask'])
             
-            # Get predictions (0 or 1)
             predictions = torch.argmax(outputs.logits, dim=1).tolist()
-            
-            # Create output JSON
-            for k in range(len(batch['id'])):
-                output_json = {
-                    "id": batch["id"][k].item(),
-                    "language": batch["language"][k],
-                    sentence1_str: batch[sentence1_str][k],
-                    sentence2_str: batch[sentence2_str][k],
-                    "prediction": predictions[k]
-                }
+            ids = batch['id']
+
+            # Append results from this process's batch to its local list
+            for i in range(len(ids)):
+                results_list.append({
+                    "id": int(ids[i]),
+                    "language": batch["language"][i],
+                    "origin_query": batch["origin_query"][i], # hardcode
+                    sentence2_str: batch[sentence2_str][i],
+                    "prediction": int(predictions[i])
+                })
                 
-                # Write to file
+    accelerator.wait_for_everyone()
+    gathered_results = gather_object(results_list)
+
+    # The main process writes the final, complete list of results to a file
+    if accelerator.is_local_main_process:
+        # The gathered_results might have more items than the original dataset
+        # if the dataset size wasn't perfectly divisible by (num_processes * batch_size).
+        # We trim any padding examples added by the dataloader.
+        final_results = gathered_results[:len(test_dataset)]
+
+        print(f"Gathered {len(final_results)} results. Saving to {data_args.outputs}...")
+        with open(data_args.outputs, 'w', encoding='utf-8') as f:
+            for output_json in final_results:
                 f.write(json.dumps(output_json, ensure_ascii=False) + "\n")
-    
-    print(f"Predictions saved to {data_args.outputs}")
+
+        print(f"Predictions saved to {data_args.outputs}")
 
 
 def main():
+    
+    
     """Main prediction function."""
     try:
         # Load prediction parameters (no training config needed)
-        model_args, data_args = load_prediction_parameters()
-        
-        print("="*60)
-        print(f"Starting prediction for task: {data_args.task_name}")
-        print(f"Loading model from: {model_args.model_name_or_path}")
-        print(f"Test file: {data_args.test_file}")
-        print(f"Output file: {data_args.outputs}")
-        print("="*60)
-        
+
+        model_args, data_args, training_args = load_parameters()
+        accelerator = Accelerator()
+        if accelerator.is_local_main_process:
+            print("="*60)
+            print(f"Loading model from: {model_args.model_name_or_path}")
+            print(f"Using fast tokenizer: {model_args.use_fast_tokenizer}")
+            print(f"Using LoRA: {model_args.use_lora}")
+            print(f"LoRA target modules: {model_args.lora_target_modules}")
+            print("="*60)
+            print(f"Starting prediction for task: {data_args.task_name}")
+            print(f"Test file: {data_args.test_file}")
+            print(f"Output file: {data_args.outputs}")
+            print("="*60)
+            data_args.outputs = Path(model_args.model_name_or_path).name + ".txt"
+            print(f"Overwrite output file to: {data_args.outputs}")
+
         # Get batch size from data_args or use default
-        batch_size = getattr(data_args, 'per_device_eval_batch_size', 8)
+        batch_size = getattr(data_args, 'per_device_eval_batch_size', 64)
         
         # Load model and tokenizer
         model, tokenizer = load_model_and_tokenizer(model_args)
         
+        # hardcode - use fp16
         # Create datasets
         datasets, sentence1_str, sentence2_str = create_datasets(data_args, tokenizer)
-        print(f"Created datasets with columns: {sentence1_str}, {sentence2_str}")
+        if accelerator.is_local_main_process:
+            print(f"Created datasets with columns: {sentence1_str}, {sentence2_str}")
+        
         
         # Check test dataset exists
         if 'test' not in datasets:
@@ -112,18 +151,22 @@ def main():
         run_prediction(
             model, tokenizer, datasets['test'], 
             data_args, batch_size, 
-            sentence1_str, sentence2_str
+            sentence1_str, sentence2_str,
+            accelerator=accelerator
         )
-        
-        print("\n" + "="*60)
-        print("Prediction completed successfully!")
-        print(f"Results saved to: {data_args.outputs}")
-        print("="*60)
+
+        if accelerator.is_local_main_process:
+            print("\n" + "="*60)
+            print("Prediction completed successfully!")
+            print(f"Results saved to: {data_args.outputs}")
+            print("="*60)
         
     except Exception as e:
-        print(f"Prediction failed with error: {e}")
+        if accelerator.is_local_main_process:
+            print(f"Prediction failed with error: {e}")
         raise
 
 
 if __name__ == "__main__":
+    from contextlib import nullcontext
     main()

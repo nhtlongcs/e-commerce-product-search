@@ -18,12 +18,15 @@ def main():
         
         # Load parameters (but we'll override training settings)
         model_args, data_args, original_training_args = load_parameters()
-        
+        original_training_args.per_device_eval_batch_size = 64
+        original_training_args.fp16_full_eval = True  # Ensure FP16 is used for evaluation
         print("="*60)
         print("EVALUATION MODE")
         print(f"Task: {data_args.task_name}")
         print(f"Model: {model_args.model_name_or_path}")
+        print(f"Batch size: {original_training_args.per_device_eval_batch_size}")
         print(f"Cross-validation fold: {data_args.fold_id}")
+        print(f"Using FP16: {original_training_args.fp16_full_eval}")
         print("="*60)
         
         # Create new TrainingArguments specifically for evaluation
@@ -31,7 +34,8 @@ def main():
         training_args = TrainingArguments(
             output_dir=original_training_args.output_dir if hasattr(original_training_args, 'output_dir') else "./eval-outputs/",
             per_device_eval_batch_size=getattr(original_training_args, 'per_device_eval_batch_size', 128),
-            dataloader_num_workers=4,
+            dataloader_num_workers=16,
+            fp16_full_eval=getattr(original_training_args, 'fp16_full_eval', True),
             dataloader_pin_memory=True,
             eval_accumulation_steps=1,
             do_train=False,

@@ -1,0 +1,3 @@
+# accelerate launch --mixed_precision fp16 --multi_gpu  predict.py QI-outputs/mistral_7b_v0.3-QI_2lang-512-fold0 config/QI/predict/data_QI_2lang.json
+# accelerate launch --mixed_precision fp16 --multi_gpu  predict.py QI-outputs/mistral_7b_v0.3-QI_2lang-512-fold1 config/QI/predict/data_QI_2lang.json
+# accelerate launch --mixed_precision fp16 --multi_gpu  predict.py QI-outputs/mistral_7b_v0.3-QI_2lang-512-fold2/checkpoint-3250 config/QI/predict/data_QI_2lang.json
