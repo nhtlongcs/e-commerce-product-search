@@ -1,1 +1,0 @@
-python train.py config/predict_QI.json

@@ -1,1 +1,0 @@
-python -m torch.distributed.launch --nproc_per_node 2 --nnodes=1 train.py config/train_QC.json
