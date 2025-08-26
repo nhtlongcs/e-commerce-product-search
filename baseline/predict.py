@@ -40,6 +40,12 @@ def sentence_pair_collate_fn(batch, sentence1_str, sentence2_str, tokenizer):
         padding=True,
         return_tensors='pt'
     )
+    # print("COLLATE FN")
+    # print(sentence1_str)
+    # print(sentence1[0])
+    # print('-'*10)
+    # print(sentence2_str)
+    # print(sentence2[0])
     return {
         'input_ids': padded['input_ids'],
         'attention_mask': padded['attention_mask'],
@@ -98,7 +104,8 @@ def run_prediction(model, tokenizer, test_dataset, data_args, batch_size, senten
         # if the dataset size wasn't perfectly divisible by (num_processes * batch_size).
         # We trim any padding examples added by the dataloader.
         final_results = gathered_results[:len(test_dataset)]
-
+        # sort by id
+        final_results.sort(key=lambda x: x['id'])
         print(f"Gathered {len(final_results)} results. Saving to {data_args.outputs}...")
         with open(data_args.outputs, 'w', encoding='utf-8') as f:
             for output_json in final_results:
@@ -141,12 +148,15 @@ def main():
         datasets, sentence1_str, sentence2_str = create_datasets(data_args, tokenizer)
         if accelerator.is_local_main_process:
             print(f"Created datasets with columns: {sentence1_str}, {sentence2_str}")
-        
-        
+            print("Sample Dataset Item:")
+            for key, value in datasets['test'][0].items():
+                print(f"  {key}: {value}")
+
         # Check test dataset exists
         if 'test' not in datasets:
             raise ValueError(f"Test dataset not found. Please check test_file: {data_args.test_file}")
         
+
         # Run prediction
         run_prediction(
             model, tokenizer, datasets['test'], 

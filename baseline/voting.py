@@ -47,9 +47,11 @@ if __name__ == "__main__":
 		print("Usage: python voting.py input1.txt input2.txt ... output.txt")
 		sys.exit(1)
 	*input_files, output_file = sys.argv[1:]
-	w = [1] * len(input_files)
-	# w = [0.3306, 0.3327, 0.3367]
+	w = [0.5, 0.7, 0.5]
 	# w = [0.2303407934864819, 0.2541745702223031, 0.2562831629342899, 0.2592014733569251]
 	# w = [0.3088400908442315, 0.3436235246238231, 0.3475363845319454]
+	if len(w) != len(input_files):
+		print(f"[WARNING] Weight vector length {len(w)} does not match number of input files {len(input_files)}. Using uniform weights.")
+		w = [1] * len(input_files)
 	main(input_files, output_file, w)
 

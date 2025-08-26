@@ -18,10 +18,14 @@ def main():
         # Load parameters
         model_args, data_args, training_args = load_parameters()
         
+
         print("="*60)
         print(f"Starting training for task: {data_args.task_name}")
         print(f"Model: {model_args.model_name_or_path}")
-        print(f"Cross-validation fold: {data_args.fold_id}")
+        if data_args.fold_id == -1:
+            print("Training full dataset without evaluation.")
+        else:
+            print(f"Cross-validation fold: {data_args.fold_id}")
         print(f"Using FP16: {training_args.fp16}")
         print("="*60)
         
@@ -37,7 +41,9 @@ def main():
         should_use_wandb = training_args.report_to == "wandb" or "wandb" in training_args.report_to
         if should_use_wandb:
             training_args.report_to = []  # Disable automatic wandb init by Trainer
-        
+        if data_args.fold_id == -1:
+            training_args.eval_strategy = 'no'
+            datasets['validation'] = None  # Override validation dataset for full training
         # Create trainer FIRST (this will initialize DeepSpeed/Accelerator without wandb conflicts)
         trainer = create_trainer(model=model, tokenizer=tokenizer, datasets=datasets, training_args=training_args)
 
@@ -47,6 +53,7 @@ def main():
             training_args.report_to = original_report_to  # Restore original setting
         else:
             run_name, _ = create_run_name(model_args, data_args)
+        print(f"report to: {training_args.report_to}")
         training_args.output_dir = os.path.join(training_args.output_dir, run_name)
         print(f"Output directory: {training_args.output_dir}")     
         save_training_config(json.loads(training_args.to_json_string()), training_args.output_dir)

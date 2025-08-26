@@ -1,7 +1,7 @@
 """
 Dataset classes and data collation functions.
 """
-import random
+from random import random
 import pandas as pd
 import json
 import torch
@@ -61,12 +61,9 @@ class SentencePairDataset(Dataset):
         # sentence1 = self.query_instruction + '\n' + 'Query: ' + sentence1
         if self.sentence2_str == "category_path":
             sentence2_ls = str(item[self.sentence2_str]).split(',')
-            if self.stage == "train":
-                max_n = len(sentence2_ls)
-                n = random.randint(3, max_n) if max_n >= 3 else max_n
-                sentence2 = ', '.join(sentence2_ls[-n:])
-            else:
-                sentence2 = ', '.join(sentence2_ls)
+            n = random.randint(2, len(sentence2_ls))
+            n = min(n, len(sentence2_ls))
+            sentence2 = ', '.join(sentence2_ls[-n:])
         else:
             sentence2 = str(item[self.sentence2_str])
         label = item['label']
