@@ -1,0 +1,3 @@
+torchrun --nproc_per_node 4 --nnodes=1 train.py /home/tnguyenho/spinning-storage/tnguyenho/llms/eCeLLM-L/ config/QI/data_fold0.json config/QI/large_model.json config/QI/train_14b.json
+torchrun --nproc_per_node 4 --nnodes=1 train.py /home/tnguyenho/spinning-storage/tnguyenho/llms/eCeLLM-L/ config/QI/data_fold1.json config/QI/large_model.json config/QI/train_14b.json
+torchrun --nproc_per_node 4 --nnodes=1 train.py /home/tnguyenho/spinning-storage/tnguyenho/llms/eCeLLM-L/ config/QI/data_fold2.json config/QI/large_model.json config/QI/train_14b.json
