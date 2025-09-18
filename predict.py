@@ -6,9 +6,9 @@ import json
 import torch
 from torch.utils.data import DataLoader
 from tqdm import tqdm
-from lib.params import load_parameters
-from lib.model import load_model_and_tokenizer
-from lib.dataset import create_datasets
+from src.params import load_parameters
+from src.model import load_model_and_tokenizer
+from src.dataset import create_datasets
 from pathlib import Path
 from accelerate import Accelerator
 
@@ -135,7 +135,6 @@ def run_prediction(model, tokenizer, test_dataset, data_args, batch_size, senten
 
 
 def main():
-    
     
     """Main prediction function."""
     try:

@@ -3,4 +3,12 @@
 *.json
 
 baseline
-*__pycache__/
+wandb
+mlruns
+predictions
+*__pycache__
+*.pt
+*.pth
+*.pyc
+temp_output
+models

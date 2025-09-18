@@ -4,11 +4,11 @@ Main training script with resume capability.
 
 import os
 import sys
-from lib.params import load_parameters
-from lib.model import load_model_and_tokenizer
-from lib.dataset import create_datasets
-from lib.trainer import create_trainer, run_training
-from lib.utils import create_run_name, setup_wandb, save_training_config, cleanup_wandb
+from src.params import load_parameters
+from src.model import load_model_and_tokenizer
+from src.dataset import create_datasets
+from src.trainer import create_trainer, run_training
+from src.utils import create_run_name, setup_wandb, save_training_config, cleanup_wandb
 from dataclasses import asdict
 import json
 

@@ -4,11 +4,11 @@ Simple evaluation script that only performs evaluation on a trained model checkp
 
 import os
 import sys
-from lib.params import load_parameters
-from lib.model import load_model_and_tokenizer
-from lib.dataset import create_datasets
-from lib.trainer import create_trainer
-from lib.utils import create_run_name, setup_wandb, cleanup_wandb
+from src.params import load_parameters
+from src.model import load_model_and_tokenizer
+from src.dataset import create_datasets
+from src.trainer import create_trainer
+from src.utils import create_run_name, setup_wandb, cleanup_wandb
 from transformers import TrainingArguments
 
 
