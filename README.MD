@@ -49,3 +49,4 @@ python utils/compare2sub.py submission-archive/best_submit_QC.txt <QC-submission
 python utils/compare2sub.py submission-archive/best_submit_QI.txt <QI-submission-file>
 ```
 
+The difference should be very small if you are using the same model checkpoints. And should be lower than 10% compared to the archived submission files.
