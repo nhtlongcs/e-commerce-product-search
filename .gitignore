@@ -3,3 +3,4 @@
 *.json
 
 baseline
+*__pycache__/
