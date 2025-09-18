@@ -77,35 +77,55 @@ def run_prediction(model, tokenizer, test_dataset, data_args, batch_size, senten
     if accelerator.is_local_main_process:
         print(f"Starting predict {len(test_dataset)} examples with batch size {batch_size}...")
 
-    with open(data_args.outputs, 'w', encoding='utf-8') as f:
-        for batch in tqdm(dataloader, desc="Predicting", disable=not accelerator.is_local_main_process):
-            with torch.no_grad():
-                outputs = model(input_ids=batch['input_ids'], attention_mask=batch['attention_mask'])
-            
-            predictions = torch.argmax(outputs.logits, dim=1).tolist()
-            ids = batch['id']
+    for batch in tqdm(dataloader, desc="Predicting", disable=not accelerator.is_local_main_process):
+        with torch.no_grad():
+            outputs = model(input_ids=batch['input_ids'], attention_mask=batch['attention_mask'])
+        
+        predictions = torch.argmax(outputs.logits, dim=1).tolist()
+        ids = batch['id']
 
-            # Append results from this process's batch to its local list
-            for i in range(len(ids)):
-                results_list.append({
-                    "id": int(ids[i]),
-                    "language": batch["language"][i],
-                    "origin_query": batch["origin_query"][i], # hardcode
-                    sentence2_str: batch[sentence2_str][i],
-                    "prediction": int(predictions[i])
-                })
+        # Append results from this process's batch to its local list
+        for i in range(len(ids)):
+            results_list.append({
+                "id": int(ids[i]),
+                "language": batch["language"][i],
+                "origin_query": batch["origin_query"][i], # hardcode
+                sentence2_str: batch[sentence2_str][i],
+                "prediction": int(predictions[i])
+            })
                 
     accelerator.wait_for_everyone()
     gathered_results = gather_object(results_list)
 
     # The main process writes the final, complete list of results to a file
     if accelerator.is_local_main_process:
-        # The gathered_results might have more items than the original dataset
-        # if the dataset size wasn't perfectly divisible by (num_processes * batch_size).
-        # We trim any padding examples added by the dataloader.
-        final_results = gathered_results[:len(test_dataset)]
-        # sort by id
+        # Get all unique IDs from the original test dataset
+        original_ids = set(test_dataset[i]['id'] for i in range(len(test_dataset)))
+        
+        # Create a dictionary to deduplicate and filter results by original IDs
+        results_dict = {}
+        for result in gathered_results:
+            result_id = result['id']
+            # Only keep results that correspond to original test dataset IDs
+            if result_id in original_ids:
+                # In case of duplicates (shouldn't happen but safety check), keep the first one
+                if result_id not in results_dict:
+                    results_dict[result_id] = result
+        
+        # Convert back to list and sort by id
+        final_results = list(results_dict.values())
         final_results.sort(key=lambda x: x['id'])
+        
+        # Verify we have all expected results
+        expected_count = len(test_dataset)
+        actual_count = len(final_results)
+        
+        if actual_count != expected_count:
+            print(f"WARNING: Expected {expected_count} results but got {actual_count}")
+            missing_ids = original_ids - set(r['id'] for r in final_results)
+            if missing_ids:
+                print(f"Missing IDs: {sorted(missing_ids)}")
+        
         print(f"Gathered {len(final_results)} results. Saving to {data_args.outputs}...")
         with open(data_args.outputs, 'w', encoding='utf-8') as f:
             for output_json in final_results:
@@ -123,6 +143,8 @@ def main():
 
         model_args, data_args, training_args = load_parameters()
         accelerator = Accelerator()
+        model_args.use_lora = False
+
         if accelerator.is_local_main_process:
             print("="*60)
             print(f"Loading model from: {model_args.model_name_or_path}")
@@ -139,7 +161,6 @@ def main():
 
         # Get batch size from data_args or use default
         batch_size = getattr(data_args, 'per_device_eval_batch_size', 64)
-        
         # Load model and tokenizer
         model, tokenizer = load_model_and_tokenizer(model_args)
         

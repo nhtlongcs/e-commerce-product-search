@@ -59,16 +59,16 @@ class SentencePairDataset(Dataset):
         else:
             sentence1 = str(item[self.sentence1_str])
         # sentence1 = self.query_instruction + '\n' + 'Query: ' + sentence1
-        if self.sentence2_str == "category_path":
-            sentence2_ls = str(item[self.sentence2_str]).split(',')
-            if self.stage == "train":
-                max_n = len(sentence2_ls)
-                n = random.randint(3, max_n) if max_n >= 3 else max_n
-                sentence2 = ', '.join(sentence2_ls[-n:])
-            else:
-                sentence2 = ', '.join(sentence2_ls)
-        else:
-            sentence2 = str(item[self.sentence2_str])
+        # if self.sentence2_str == "category_path":
+        #     sentence2_ls = str(item[self.sentence2_str]).split(',')
+        #     if self.stage == "train":
+        #         max_n = len(sentence2_ls)
+        #         n = random.randint(3, max_n) if max_n >= 3 else max_n
+        #         sentence2 = ', '.join(sentence2_ls[-n:])
+        #     else:
+        #         sentence2 = ', '.join(sentence2_ls)
+        # else:
+        sentence2 = str(item[self.sentence2_str])
         label = item['label']
         encoding = self.tokenizer(
             sentence1,
@@ -103,11 +103,11 @@ class SentencePairPredictDataset(SentencePairDataset):
             sentence1 = str(item[self.sentence1_str])
         # sentence1 = self.query_instruction + '\n' + 'Query: ' + sentence1
 
-        if self.sentence2_str == "category_path":
-            sentence2_ls = str(item[self.sentence2_str]).split(',')
-            sentence2 = ', '.join(sentence2_ls)
-        else:
-            sentence2 = str(item[self.sentence2_str])
+        # if self.sentence2_str == "category_path":
+        #     sentence2_ls = str(item[self.sentence2_str]).split(',')
+        #     sentence2 = ', '.join(sentence2_ls)
+        # else:
+        sentence2 = str(item[self.sentence2_str])
         # sentence2_ls = str(item[self.sentence2_str]).split(',')
         # sentence2 = '/'.join([sentence2_ls[0], sentence2_ls[-1]])
         encoding = self.tokenizer(

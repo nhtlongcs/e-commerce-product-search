@@ -52,7 +52,7 @@ def main():
             run_name = setup_wandb(model_args, data_args, training_args, tags=['cross-encoder'])
             training_args.report_to = original_report_to  # Restore original setting
         else:
-            run_name, _ = create_run_name(model_args, data_args)
+            run_name, _ = create_run_name(model_args, data_args, training_args)
         print(f"report to: {training_args.report_to}")
         training_args.output_dir = os.path.join(training_args.output_dir, run_name)
         print(f"Output directory: {training_args.output_dir}")     

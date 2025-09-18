@@ -17,8 +17,7 @@ from peft import (
     TaskType,
     PeftConfig
 )
-
-
+# from .gemma3 import Gemma3ForSequenceClassification
 def load_model_and_tokenizer(model_args, num_labels=2):
     """Load model and tokenizer with optional PEFT configuration."""
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -32,19 +31,37 @@ def load_model_and_tokenizer(model_args, num_labels=2):
         config_peft = PeftConfig.from_pretrained(model_args.model_name_or_path)
     
     # Load configuration
-    if config_peft:
-        config = AutoConfig.from_pretrained(
-            config_peft.base_model_name_or_path,
-            num_labels=num_labels
-        )
-        model_name = config_peft.base_model_name_or_path
+    # hard code
+    print(f"Loading configuration for {model_args.model_name_or_path}")
+    if 'gemma-3' in model_args.model_name_or_path or 'gemma_3' in model_args.model_name_or_path:
+        print('LOAD SPECIAL GEMMA-3')
+        from transformers.models.gemma3.configuration_gemma3 import Gemma3Config
+        if config_peft:
+            config = Gemma3Config.from_pretrained(
+                config_peft.base_model_name_or_path,
+                num_labels=num_labels
+            )
+            model_name = config_peft.base_model_name_or_path
+        else:
+            config = Gemma3Config.from_pretrained(
+                model_args.model_name_or_path,
+                num_labels=num_labels
+            )
+            model_name = model_args.model_name_or_path
     else:
-        config = AutoConfig.from_pretrained(
-            model_args.model_name_or_path,
-            num_labels=num_labels
-        )
-        model_name = model_args.model_name_or_path
-    
+        if config_peft:
+            config = AutoConfig.from_pretrained(
+                config_peft.base_model_name_or_path,
+                num_labels=num_labels
+            )
+            model_name = config_peft.base_model_name_or_path
+        else:
+            config = AutoConfig.from_pretrained(
+                model_args.model_name_or_path,
+                num_labels=num_labels
+            )
+            model_name = model_args.model_name_or_path
+    print(f"CONFIG TYPE: {type(config)}")
     # Load tokenizer
     print(f"Loading tokenizer from: {model_name}")
     print(f"Use fast tokenizer: {model_args.use_fast_tokenizer}")
@@ -61,11 +78,21 @@ def load_model_and_tokenizer(model_args, num_labels=2):
     
     # Load model
     print(f"Loading model from: {model_args.model_name_or_path}")
-    model = AutoModelForSequenceClassification.from_pretrained(
-        model_args.model_name_or_path,
-        num_labels=num_labels,
-        problem_type="single_label_classification"
-    )
+
+    if 'gemma-3' in model_args.model_name_or_path or 'gemma_3' in model_args.model_name_or_path:
+        from .gemma3 import Gemma3ForSequenceClassification
+        model = Gemma3ForSequenceClassification.from_pretrained(
+            model_args.model_name_or_path,
+            num_labels=num_labels,
+            problem_type="single_label_classification"
+        )
+    else:
+        model = AutoModelForSequenceClassification.from_pretrained(
+            model_args.model_name_or_path,
+            num_labels=num_labels,
+            problem_type="single_label_classification"
+        )
+
     model_modules = str(model.modules)
     pattern = r'\((\w+)\): Linear'
     linear_layer_names = list(re.findall(pattern, model_modules))

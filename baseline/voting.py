@@ -1,4 +1,4 @@
-
+import os
 # Ensemble voting per ID from multiple input files
 import json
 import sys
@@ -34,6 +34,9 @@ def main(input_files, output_file, w):
 		for id_, data in meta_part.items():
 			if id_ not in meta:
 				meta[id_] = data
+	if os.path.exists(output_file):
+		print(f"[WARNING] Output file {output_file} already exists. Stopping.")
+		return
 	with open(output_file, 'w', encoding='utf-8') as out:
 		for id_ in sorted(votes.keys()):
 			label_weights = votes[id_]
@@ -47,7 +50,9 @@ if __name__ == "__main__":
 		print("Usage: python voting.py input1.txt input2.txt ... output.txt")
 		sys.exit(1)
 	*input_files, output_file = sys.argv[1:]
-	w = [0.5, 0.7, 0.5]
+	w = [1,1,1]
+	for f in input_files:
+		print(f)
 	# w = [0.2303407934864819, 0.2541745702223031, 0.2562831629342899, 0.2592014733569251]
 	# w = [0.3088400908442315, 0.3436235246238231, 0.3475363845319454]
 	if len(w) != len(input_files):

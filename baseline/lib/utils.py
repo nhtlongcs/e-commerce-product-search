@@ -15,13 +15,21 @@ def compute_metrics(p: EvalPrediction):
     f1 = f1_score(p.label_ids, preds, pos_label=1)
     return {"f1": f1}
 
-def create_run_name(model_args, data_args):
+def create_run_name(model_args, data_args, training_args=None):
     """Create a unique run name based on model and task."""
     model_name = Path(model_args.model_name_or_path).name.replace('-', '_').replace('.','_').lower()
     run_name = f"{model_name}-{data_args.task_name}-{data_args.max_seq_length}"
     print(f"Run name: {run_name}")
     if data_args.fold_id is not None:
         run_name += f"-fold{data_args.fold_id}"
+    if training_args:
+        run_name += f"-lr-{training_args.learning_rate:.0e}"
+        if training_args.bf16:
+            run_name += "-bf16"
+        if training_args.fp16:
+            run_name += "-fp16"
+        if training_args.lr_scheduler_type:
+            run_name += f"-{training_args.lr_scheduler_type}"
     return run_name, model_name
 
 def setup_wandb(model_args, data_args, training_args, tags=None):
@@ -32,7 +40,7 @@ def setup_wandb(model_args, data_args, training_args, tags=None):
     os.environ["WANDB_PROJECT"] = "analyticup-dcu"
     
     # Create run name
-    run_name, model_name = create_run_name(model_args, data_args)
+    run_name, model_name = create_run_name(model_args, data_args, training_args)
     # Create tags
     if tags is None:
         tags = [data_args.task_name, "baseline", model_name]
