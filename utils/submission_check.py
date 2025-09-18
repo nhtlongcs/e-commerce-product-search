@@ -1,6 +1,16 @@
-task = 'QC'
-submission = f'submit_{task}.txt'
-test_file = f'../data/raw/dev_{task}.txt'
+"""
+This script checks the submission file for:
+1. All IDs are present.
+2. Language matches the original query.
+3. Origin query matches the original query.
+"""
+import sys
+if len(sys.argv) != 3:
+    print("Usage: python submission_check.py <QC|QI> <submission_file>")
+    sys.exit(1)
+task = sys.argv[1]  # QC or QI
+submission = sys.argv[2]  # submission file path
+test_file = f'data/raw/dev_{task}.txt'
 import json
 QC_id_check = set(list(range(1,100000 + 1)))
 QI_id_check = set(list(range(1,65000 + 1)))

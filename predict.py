@@ -155,7 +155,7 @@ def main():
             print(f"Test file: {data_args.test_file}")
             print(f"Output file: {data_args.outputs}")
             print("="*60)
-            data_args.outputs = Path(model_args.model_name_or_path).name + ".txt"
+            # data_args.outputs = Path(model_args.model_name_or_path).name + ".txt"
             print(f"Overwrite output file to: {data_args.outputs}")
 
         # Get batch size from data_args or use default

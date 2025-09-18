@@ -2,8 +2,13 @@
 
 import re
 import json
-file2 = 'submission-QI/submit_QI_8857.txt'
-file1 = 'checkpoint-8000.txt'
+import sys
+
+if len(sys.argv) != 3:
+    print("Usage: python compare2sub.py <file1> <file2>")
+    sys.exit(1)
+file1 = sys.argv[1]
+file2 = sys.argv[2]
 
 file1_data = {}
 file2_data = {}

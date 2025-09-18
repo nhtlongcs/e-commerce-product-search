@@ -167,5 +167,5 @@ def __test(filepath):
     print(f"Batch labels shape: {batch['labels'].shape}")
 
 if __name__ == "__main__":
-    filepath = '../data/translated/translated_train_QI_full_fold.csv'
+    filepath = 'data/translated/translated_train_QI_full_fold.csv'
     __test(filepath)
