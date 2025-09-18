@@ -1,9 +1,0 @@
-{
-  "task_name": "QI_2lang",
-  "fold_id": 0,
-  "train_file": "../data/translated/translated_train_QI_full_fold.csv",
-  "validation_file": "../data/translated/translated_train_QI_full_fold.csv",
-  "test_file": "../data/translated/translated_dev_QI_full.csv",
-  "outputs": "submissionQI.txt",
-  "max_seq_length": 2048
-}

@@ -1,1 +1,0 @@
-python train.py config/train_QI_XLMR.json

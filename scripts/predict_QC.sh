@@ -1,1 +1,1 @@
-python train.py config/predict_QC.json
+python train.py config/predict_QC_XLMR.json

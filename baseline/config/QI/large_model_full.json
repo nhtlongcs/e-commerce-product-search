@@ -1,5 +1,0 @@
-{
-  "model_name_or_path": "/home/support/llm/Qwen2.5-14B/",
-  "use_lora": true,
-  "lora_target_modules": "q_proj,k_proj,v_proj,o_proj,gate_proj,down_proj,up_proj"
-}
