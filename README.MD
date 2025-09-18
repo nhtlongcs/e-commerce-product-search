@@ -45,6 +45,7 @@ python utils/submission_check.py <QI|QC> <submission_file>
 To compare the difference between two submission files for performance checking, you can use the following command:
 
 ```bash
-python utils/compare2sub.py <file1> <file2>
+python utils/compare2sub.py submission-archive/best_submit_QC.txt <QC-submission-file>
+python utils/compare2sub.py submission-archive/best_submit_QI.txt <QI-submission-file>
 ```
 
