@@ -21,17 +21,6 @@ uv sync
 . .venv/bin/activate
 ```
 
-Download Gemma3 checkpoints from
-- [Gemma3-stage1](https://drive.google.com/file/d/106hiq7s-7eSjVQRQKanf5aCetl6pJJ6d/view?usp=sharing)
-- [Gemma3-stage2](https://drive.google.com/file/d/1Kk3VpQxg1j8cwjhzzElLqUfOEArW7WGa/view?usp=drive_link)
-
-and unzip these into `models`
-Correct file path to load these models should be as follow: `models/best-gemma-3-QC-stage-01`, ...
-
-
-Read the [model document](models/README.md) for more details about the models setup. We have multiple checkpoints for each fold. You can choose the best checkpoint based on your validation results.
-
-
 ## Data preprocessing
 
 Data preprocess steps includes: cross-validation splitting and translation
@@ -41,29 +30,34 @@ bash scripts/preprocess.sh
 ```
 Final files we use for training are: `data/translated/translated_train_QI_full_fold` and `data/translated/translated_train_QC_full_fold_v2`
 
-
+## Reproduction
 ## Training
 
 ```bash
 bash scripts/train.sh
 ```
-
-Configuration files can be found in `config/QC` and `config/QI`
+Configuration files can be found in `config/QC` and `config/QI`. Checkpoints will be saved in `outputs`
 
 ## Inference
 
-Make sure you have run the training code first.
-In the folder ./models, you should have the models' paths as follow:
+Download Gemma3 checkpoints from
+- [Gemma3-stage1](https://drive.google.com/file/d/106hiq7s-7eSjVQRQKanf5aCetl6pJJ6d/view?usp=sharing)
+- [Gemma3-stage2](https://drive.google.com/file/d/1Kk3VpQxg1j8cwjhzzElLqUfOEArW7WGa/view?usp=drive_link)
+
+and unzip these into `models`
+
+In the folder `./models`, you should have the models' paths as follow:
 ```
 ./models/gemma-3-12b-pt 
-./models/QC-stage-01/<checkpoint-folders>
-./models/QC-stage-02/<checkpoint-folders>
-./models/QI-stage-01/<checkpoint-folders>
-./models/QI-stage-02/<checkpoint-folders>
+./models/best-gemma-3-QC-stage-01
+./models/best-gemma-3-QC-stage-02
+./models/best-gemma-3-QI-stage-01
+./models/best-gemma-3-QI-stage-02
 ```
 
 **IMPORTANT**: For gemma-3 checkpoints, the default automodel not working. So the path must have "gemma-3" in the folder name to load the model correctly.
 
+Execute the prediction scripts, make sure the paths are correct.
 
 ```bash
 bash scripts/predict_QC.sh
