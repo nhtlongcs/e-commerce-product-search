@@ -4,9 +4,10 @@
 
 Team: DcuRAGONS - Dublin City University, Dublin, Ireland
 Members:
-    - Thang-Long Nguyen Ho: thanglong.nguyenho27@mail.dcu.ie
-    - Hoang-Bao Le: bao.le2@mail.dcu.ie
-    - Minh-Khoi Pham: minhkhoi.pham4@mail.dcu.ie
+- Thang-Long Nguyen Ho: thanglong.nguyenho27@mail.dcu.ie
+- Hoang-Bao Le: bao.le2@mail.dcu.ie
+- Minh-Khoi Pham: minhkhoi.pham4@mail.dcu.ie
+
 Technical report can be found in `report/`
 
 ## Requirements
@@ -22,6 +23,7 @@ uv sync
 Download Gemma3 checkpoints from
 - [Gemma3-stage1](https://drive.google.com/file/d/106hiq7s-7eSjVQRQKanf5aCetl6pJJ6d/view?usp=sharing)
 - [Gemma3-stage2](https://drive.google.com/file/d/1Kk3VpQxg1j8cwjhzzElLqUfOEArW7WGa/view?usp=drive_link)
+
 and unzip these into `models`
 Correct file path to load these models should be as follow: `models/best-gemma-3-QC-stage-01`, ...
 
