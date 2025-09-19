@@ -15,8 +15,7 @@ def translate_process_data(df_dataset, verbose=False):
     return df_dataset
 
 if __name__ == "__main__":
-    # filename = "train_QI"
-    filenames = ["train_QI", "train_QC", "dev_QI", "dev_QC"]
+    filenames = ["train_QI", "train_QC", "dev_QI", "dev_QC", "test_QI", "test_QC"]
     for filename in filenames:
         print(f"Processing {filename}")
         filepath = f"../data/{filename}.txt"
