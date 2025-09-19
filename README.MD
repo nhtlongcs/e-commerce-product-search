@@ -12,8 +12,9 @@ uv sync
 
 ## Training
 
-TODO: Add instruction for data preparation
-
+```bash
+bash scripts/train.sh
+```
 ## Inference
 
 Make sure you have run the training code first.
