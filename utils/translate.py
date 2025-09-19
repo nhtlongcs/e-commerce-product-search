@@ -1,5 +1,5 @@
+import os
 import json 
-import rich
 import pandas as pd
 
 from nlp.lang import split_translate_merge
@@ -15,11 +15,11 @@ def translate_process_data(df_dataset, verbose=False):
     return df_dataset
 
 if __name__ == "__main__":
-    # filename = "train_QI"
     filenames = ["train_QI", "train_QC", "dev_QI", "dev_QC"]
+    os.makedirs("data/translated", exist_ok=True)
     for filename in filenames:
         print(f"Processing {filename}")
-        filepath = f"../data/{filename}.txt"
+        filepath = f"./data/raw/{filename}.txt"
         data = []
         with open(filepath, 'r') as f:
             for line in f:
@@ -34,5 +34,5 @@ if __name__ == "__main__":
                 df = df_chunk
             else:
                 df = pd.concat([df, df_chunk], ignore_index=True)
-            df_chunk.to_csv(f"translated_{filename}_chunk_{i}_{min(i+batch_size, len(data))}.csv", index=False)
-        df.to_csv(f"translated_{filename}_full.csv", index=False)
+            df_chunk.to_csv(f"./data/translated/translated_{filename}_chunk_{i}_{min(i+batch_size, len(data))}.csv", index=False)
+        df.to_csv(f"./data/translated/translated_{filename}_full.csv", index=False)
