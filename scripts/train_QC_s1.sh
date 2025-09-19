@@ -1,0 +1,3 @@
+torchrun --nproc_per_node 4 --nnodes=1 train.py models/gemma-3-12b-pt config/QC/data_fold0.json config/QC/large_model_full.json config/QC/train_14b.json
+# torchrun --nproc_per_node 4 --nnodes=1 train.py models/gemma-3-12b-pt config/QC/data_fold1.json config/QC/large_model_full.json config/QC/train_14b.json
+# torchrun --nproc_per_node 4 --nnodes=1 train.py models/gemma-3-12b-pt config/QC/data_fold2.json config/QC/large_model_full.json config/QC/train_14b.json

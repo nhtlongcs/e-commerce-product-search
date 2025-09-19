@@ -21,24 +21,15 @@ class SentencePairDataset(Dataset):
         self.sentence2_str = sentence2_str
         self.stage = stage
         self.fold_id = fold_id
-        self.ext = file_path.split('.')[-1]
-
-        if self.ext == 'csv':
-            df = pd.read_csv(file_path)
-            if fold_id != -1:
-                if stage == "train":
-                    df = df[df['fold'] != fold_id]
-                elif stage == "val":
-                    df = df[df['fold'] == fold_id]
-            # no filtering for test stage   
-            self.data = df
-        elif self.ext == 'txt':
-            with open(file_path, 'r') as f:
-                for line in f:
-                    item = json.loads(line.strip())
-                    self.data.append(item)
-        else:
-            raise ValueError(f"Unsupported file extension: {self.ext}")
+        
+        df = pd.read_csv(file_path)
+        if fold_id != -1:
+            if stage == "train":
+                df = df[df['fold'] != fold_id]
+            elif stage == "val":
+                df = df[df['fold'] == fold_id]
+        # no filtering for test stage   
+        self.data = df
         self.query_instruction = """
         You are an expert e-commerce relevance evaluator. Your primary task is to assess how relevant a given product item is to a user's search query.
 
@@ -59,27 +50,25 @@ class SentencePairDataset(Dataset):
         return len(self.data)
 
     def __getitem__(self, idx):
-        if self.ext == 'csv':
-            item = self.data.iloc[idx]
-        elif self.ext == 'txt':
-            item = self.data[idx]
-        else:
-            raise ValueError(f"Unsupported file extension: {self.ext}")
+        item = self.data.iloc[idx]
         if ',' in self.sentence1_str:
             sentence1 = ' - '.join(
                 [str(item[col]) for col in self.sentence1_str.split(',')]
             )
         else:
             sentence1 = str(item[self.sentence1_str])
-            
+        # sentence1 = self.query_instruction + '\n' + 'Query: ' + sentence1
+        # if self.sentence2_str == "category_path":
+        #     sentence2_ls = str(item[self.sentence2_str]).split(',')
+        #     if self.stage == "train":
+        #         max_n = len(sentence2_ls)
+        #         n = random.randint(3, max_n) if max_n >= 3 else max_n
+        #         sentence2 = ', '.join(sentence2_ls[-n:])
+        #     else:
+        #         sentence2 = ', '.join(sentence2_ls)
+        # else:
         sentence2 = str(item[self.sentence2_str])
-        if 'label' in item:
-            label = item['label']
-        elif 'prediction' in item:
-            label = item['prediction']
-        else:
-            assert False, "No label or prediction found"
-
+        label = item['label']
         encoding = self.tokenizer(
             sentence1,
             sentence2,
@@ -88,6 +77,14 @@ class SentencePairDataset(Dataset):
             truncation=True,
             return_tensors='pt'
         )
+        # print('TRAIN DATASET')
+        # print(self.sentence1_str)
+        # print(sentence1)
+        # print('-'*10)
+        # print(self.sentence2_str)
+        # print(sentence2)
+
+
         return {
             'input_ids': encoding['input_ids'].flatten(),
             'attention_mask': encoding['attention_mask'].flatten(),
