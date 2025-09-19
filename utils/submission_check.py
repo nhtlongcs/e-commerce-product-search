@@ -5,12 +5,17 @@ This script checks the submission file for:
 3. Origin query matches the original query.
 """
 import sys
-if len(sys.argv) != 3:
-    print("Usage: python submission_check.py <QC|QI> <submission_file>")
+if len(sys.argv) < 3 or len(sys.argv) > 4:
+    print("Usage: python submission_check.py <QC|QI> <submission_file> <optional: dev|test> (default: dev)")
     sys.exit(1)
+
 task = sys.argv[1]  # QC or QI
 submission = sys.argv[2]  # submission file path
-test_file = f'data/raw/dev_{task}.txt'
+if len(sys.argv) == 4:
+    mode = sys.argv[3]  # dev or test
+else:
+    mode = 'dev'
+test_file = f'data/raw/{mode}_{task}.txt'
 import json
 QC_id_check = set(list(range(1,100000 + 1)))
 QI_id_check = set(list(range(1,65000 + 1)))

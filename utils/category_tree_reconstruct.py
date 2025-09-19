@@ -2,7 +2,7 @@ from collections import defaultdict
 import json
 from pprint import pprint
 filename = "train_QC"
-filepath = f"../data/{filename}.txt"
+filepath = f"data/{filename}.txt"
 paths = []
 with open(filepath, 'r') as f:
     for line in f:

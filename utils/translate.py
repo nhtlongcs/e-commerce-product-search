@@ -1,4 +1,5 @@
-import json 
+import json
+import os 
 import rich
 import pandas as pd
 
@@ -16,9 +17,11 @@ def translate_process_data(df_dataset, verbose=False):
 
 if __name__ == "__main__":
     filenames = ["train_QI", "train_QC", "dev_QI", "dev_QC", "test_QI", "test_QC"]
+    output_dir = "data/translated"
+    os.makedirs(output_dir, exist_ok=True)
     for filename in filenames:
         print(f"Processing {filename}")
-        filepath = f"../data/{filename}.txt"
+        filepath = f"data/raw/{filename}.txt"
         data = []
         with open(filepath, 'r') as f:
             for line in f:
@@ -33,5 +36,5 @@ if __name__ == "__main__":
                 df = df_chunk
             else:
                 df = pd.concat([df, df_chunk], ignore_index=True)
-            df_chunk.to_csv(f"translated_{filename}_chunk_{i}_{min(i+batch_size, len(data))}.csv", index=False)
-        df.to_csv(f"translated_{filename}_full.csv", index=False)
+            df_chunk.to_csv(os.path.join(output_dir, 'chunks', f"translated_{filename}_chunk_{i}_{min(i+batch_size, len(data))}.csv"), index=False)
+        df.to_csv(os.path.join(output_dir, f"translated_{filename}_full.csv"), index=False)
