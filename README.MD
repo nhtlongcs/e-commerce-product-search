@@ -40,7 +40,10 @@ bash scripts/predict_QI.sh
 To ensure the integrity of the submission files, including format, number of ids, we provide a utility script for verification. 
 
 ```bash
-python utils/submission_check.py <QI|QC> <submission_file>
+python utils/submission_check.py <QI|QC> <submission_file> <optional: dev|test> (default: dev)
+
+# Example:
+python utils/submission_check.py QI submit_QI.txt test
 ```
 
 To compare the difference between two submission files for performance checking, you can use the following command:
@@ -51,3 +54,8 @@ python utils/compare2sub.py submission-archive/best_submit_QI.txt <QI-submission
 ```
 
 The difference should be very small if you are using the same model checkpoints. And should be lower than 10% compared to the archived submission files.
+
+
+## FAQ
+
+Port already in use error: Use another port by changing the ----master_port in the train.sh file.

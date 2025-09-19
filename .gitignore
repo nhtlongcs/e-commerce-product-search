@@ -12,3 +12,4 @@ predictions
 *.pyc
 temp_output
 models
+*.zip
