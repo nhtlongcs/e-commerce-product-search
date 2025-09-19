@@ -39,6 +39,7 @@ class SentencePairDataset(Dataset):
                     self.data.append(item)
         else:
             raise ValueError(f"Unsupported file extension: {self.ext}")
+        print(f"FILE EXT: {self.ext}, Loaded {len(self.data)} items from {file_path}")
         self.query_instruction = """
         You are an expert e-commerce relevance evaluator. Your primary task is to assess how relevant a given product item is to a user's search query.
 
@@ -96,7 +97,12 @@ class SentencePairDataset(Dataset):
 
 class SentencePairPredictDataset(SentencePairDataset):
     def __getitem__(self, idx):
-        item = self.data.iloc[idx]
+        if self.ext == 'csv':
+            item = self.data.iloc[idx]
+        elif self.ext == 'txt':
+            item = self.data[idx]
+        else:
+            raise ValueError(f"Unsupported file extension: {self.ext}")
         if ',' in self.sentence1_str:
             sentence1 = ' - '.join(
                 [str(item[col]) for col in self.sentence1_str.split(',')]
