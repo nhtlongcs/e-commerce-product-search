@@ -1,0 +1,9 @@
+{
+  "task_name": "QC",
+  "fold_id": -1,
+  "train_file": "data/raw/train_QC.txt",
+  "validation_file": "data/pseudo/QC.txt",
+  "test_file": "data/raw/test_QC.txt",
+  "outputs": "submissionQC.txt",
+  "max_seq_length": 2048
+}
