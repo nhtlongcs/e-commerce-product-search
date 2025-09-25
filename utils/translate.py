@@ -1,38 +1,39 @@
-import os
-import json 
+import json
+import os 
+from nlp.translate import TranslatorWrapper
 import pandas as pd
-
-from nlp.lang import split_translate_merge
-
-def translate_process_data(df_dataset, verbose=False):
-   
-    print("Translating queries")
-    df_dataset["translated_query"] = df_dataset.progress_apply(
-        lambda x: split_translate_merge(x["origin_query"], x["language"], method="offline", verbose=verbose),
-        axis=1,
-    )
-
-    return df_dataset
+from tqdm import tqdm
 
 if __name__ == "__main__":
-    filenames = ["train_QI", "train_QC", "dev_QI", "dev_QC"]
-    os.makedirs("data/translated", exist_ok=True)
+    mt = TranslatorWrapper()
+
+    filenames = ["test_QI", "test_QC"] #"train_QI", "train_QC", "dev_QI", "dev_QC", 
+    output_dir = "data/translated"
+    os.makedirs(output_dir, exist_ok=True)
     for filename in filenames:
         print(f"Processing {filename}")
-        filepath = f"./data/raw/{filename}.txt"
+        filepath = f"data/raw/{filename}.txt"
         data = []
+        save_path = os.path.join(output_dir, f"translated_{filename}_full.csv")
+        if os.path.exists(save_path):
+            print(f"File {save_path} already exists, skipping...")
+            continue
         with open(filepath, 'r') as f:
             for line in f:
                 item = json.loads(line.strip())
                 data.append(item) # list of dicts {{'id': 1, 'task': 'QI','language': 'en', 'origin_query': .. 'item_title': .. ,'label': '0' }
-        batch_size = 50000
-        for i in range(0, len(data), batch_size):
-            chunk = data[i:i + batch_size]
-            df_chunk = pd.DataFrame(chunk)
-            df_chunk = translate_process_data(df_chunk, verbose=False)
+        batch_size = 2048
+        for i in tqdm(range(0, len(data), batch_size)):
+            chunks = data[i:i + batch_size]
+            text_chunks = [x["origin_query"] for x in chunks]
+            results = mt.translate(text_chunks, None, method="offline")
+            languages = [x["language"] for x in chunks]
+
+            df_chunk = pd.DataFrame(chunks)
+            df_chunk["translated_query"] = results
             if i == 0:
                 df = df_chunk
             else:
                 df = pd.concat([df, df_chunk], ignore_index=True)
-            df_chunk.to_csv(f"./data/translated/translated_{filename}_chunk_{i}_{min(i+batch_size, len(data))}.csv", index=False)
-        df.to_csv(f"./data/translated/translated_{filename}_full.csv", index=False)
+
+        df.to_csv(save_path, index=False)

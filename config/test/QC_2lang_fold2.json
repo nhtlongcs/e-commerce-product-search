@@ -1,0 +1,9 @@
+{
+  "task_name": "QC_2lang",
+  "fold_id": 2,
+  "train_file": "data/translated/translated_train_QC_full_fold_v2.csv",
+  "validation_file": "data/translated/translated_train_QC_full_fold_v2.csv",
+  "test_file": "data/translated/translated_test_QC_full.csv",
+  "outputs": "submissionQC_fold2.txt",
+  "max_seq_length": 2048
+}

@@ -26,7 +26,7 @@ def main():
             print("Training full dataset without evaluation.")
         else:
             print(f"Cross-validation fold: {data_args.fold_id}")
-        print(f"Using FP16: {training_args.fp16}")
+        print(f"Using BF16: {training_args.bf16}")
         print("="*60)
         
         # Load model and tokenizer
@@ -41,12 +41,12 @@ def main():
         should_use_wandb = training_args.report_to == "wandb" or "wandb" in training_args.report_to
         if should_use_wandb:
             training_args.report_to = []  # Disable automatic wandb init by Trainer
-        if data_args.fold_id == -1:
-            training_args.eval_strategy = 'no'
-            datasets['validation'] = None  # Override validation dataset for full training
+        # if data_args.fold_id == -1:
+        #     training_args.eval_strategy = 'no'
+        #     datasets['validation'] = None  # Override validation dataset for full training
         # Create trainer FIRST (this will initialize DeepSpeed/Accelerator without wandb conflicts)
         trainer = create_trainer(model=model, tokenizer=tokenizer, datasets=datasets, training_args=training_args)
-
+        print(f"EVAL STRATEGY: {training_args.eval_strategy}")
         # Now setup wandb manually and restore report_to setting
         if should_use_wandb:
             run_name = setup_wandb(model_args, data_args, training_args, tags=['cross-encoder'])
