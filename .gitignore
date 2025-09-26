@@ -2,7 +2,6 @@
 *.png
 *.json
 
-baseline
 wandb
 mlruns
 predictions

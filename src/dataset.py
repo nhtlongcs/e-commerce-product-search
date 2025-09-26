@@ -7,13 +7,15 @@ import json
 import torch
 from torch.utils.data import Dataset
 from transformers import DataCollatorWithPadding
+from utils.heuristics import remove_nan, remove_duplicates, clean_text_fields
 
 class SentencePairDataset(Dataset):
     def __init__(self, file_path, tokenizer,
                 max_length, 
                 sentence1_str, 
                 sentence2_str,
-                stage, fold_id = None):
+                stage, fold_id = None, 
+                apply_preprocessing=False):
         self.tokenizer = tokenizer
         self.max_length = max_length
         self.data = []
@@ -56,8 +58,21 @@ class SentencePairDataset(Dataset):
         Analyze the product details against both the original and translated queries to determine the most accurate classification.
         """
 
+        # Apply preprocessing if requested
+        if apply_preprocessing:
+            # Untested after refactor
+            self.data = self._apply_preprocessing(self.data)
+
     def __len__(self):
         return len(self.data)
+
+    def _apply_preprocessing(self, df: pd.DataFrame) -> pd.DataFrame:
+        """Apply preprocessing steps to the dataframe"""
+        df = clean_text_fields(df)
+        df = remove_nan(df)
+        df = remove_duplicates(df)
+
+        return df
 
     def __getitem__(self, idx):
         if self.ext == 'csv':
