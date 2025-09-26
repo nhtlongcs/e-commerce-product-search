@@ -7,7 +7,7 @@ from tqdm import tqdm
 if __name__ == "__main__":
     mt = TranslatorWrapper()
 
-    filenames = ["test_QI", "test_QC"] #"train_QI", "train_QC", "dev_QI", "dev_QC", 
+    filenames = ["test_QI", "test_QC", "train_QI", "train_QC", "dev_QI", "dev_QC"]
     output_dir = "data/translated"
     os.makedirs(output_dir, exist_ok=True)
     for filename in filenames:
