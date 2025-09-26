@@ -1,9 +1,0 @@
-{
-  "task_name": "QI",
-  "fold_id": -1,
-  "train_file": "data/raw/train_QI.txt",
-  "validation_file": "pseudo/test_QI.txt",
-  "test_file": "data/raw/test_QI.txt",
-  "outputs": "submissionQI.txt",
-  "max_seq_length": 2048
-}

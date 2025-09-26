@@ -1,8 +1,0 @@
-wandb
-mlruns
-predictions
-__pycache__
-*.pt
-*.pth
-*.pyc
-temp_output

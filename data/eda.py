@@ -7,7 +7,7 @@ import numpy as np
 import os
 
 # Directory to save images
-IMG_DIR = "/home/mpham/workspace/source/analyticup/ecps/eda_figs"
+IMG_DIR = "eda_figs"
 os.makedirs(IMG_DIR, exist_ok=True)
 fig_paths = []
 
@@ -21,7 +21,7 @@ def save_fig(fig, name):
 # Query - Item (QI)
 # =========================
 
-df_qi = pd.read_csv('/home/mpham/workspace/source/analyticup/ecps/data/translated/translated_train_QI_full_fold.csv')
+df_qi = pd.read_csv('data/translated/translated_train_QI_full_fold.csv')
 df_qi = df_qi.dropna(subset=['item_title'])
 
 fig = px.histogram(df_qi, x='label', title='Label Distribution', color='label', text_auto=True)
@@ -112,7 +112,7 @@ save_fig(fig, "qi_jaccard_translated_query_title.pdf")
 # Query - Category (QC)
 # =========================
 
-df_qc = pd.read_csv('/home/mpham/workspace/source/analyticup/ecps/data/translated/translated_train_QC_full_fold_v2.csv')
+df_qc = pd.read_csv('data/translated/translated_train_QC_full_fold_v2.csv')
 df_qc = df_qc.dropna(subset=['category_path'])
 
 fig = px.histogram(df_qc, x='label', title='Label Distribution', color='label', text_auto=True)
