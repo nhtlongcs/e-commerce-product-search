@@ -71,7 +71,7 @@ Our models achieve state-of-the-art performance on multilingual e-commerce searc
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # Clone repository
-git clone https://github.com/your-username/e-commerce-product-search.git
+git clone https://github.com/nhtlongcs/e-commerce-product-search.git
 cd e-commerce-product-search
 
 # Setup environment
