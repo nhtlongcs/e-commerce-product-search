@@ -5,7 +5,7 @@
 wandb
 mlruns
 predictions
-*__pycache__
+*__pycache__/
 *.pt
 *.pth
 *.pyc
