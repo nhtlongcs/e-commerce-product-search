@@ -36,15 +36,14 @@ This system tackles two core problems:
 - **Efficient Training**: LoRA fine-tuning with DeepSpeed for memory optimization
 - **Production Ready**: Optimized inference pipeline for real-time applications
 
-### 🌍 Multilingual Support
+## 📊 Performance
 
-Our system automatically handles queries in multiple languages through integrated translation:
+Our models achieve state-of-the-art performance on multilingual e-commerce search (unseen records, unseen languages):
 
-- **Automatic Translation**: Queries are automatically translated to English using MADLAD-400 model
-- **Mixed Language Support**: Handle queries mixing multiple languages seamlessly  
-- **Supported Languages**: Vietnamese, Chinese, Thai, Indonesian, and many more
-
-The translation happens transparently - just pass your query in any language.
+| Task | Model | Dev F1-Score | Test F1-Score | Languages Tested |
+|------|-------|----------|----------|------------------|
+| QC   | Gemma3-12B | 89.56% | 89.65% | EN, FR, ES, KO, PT, JA, DE, IT, PL, AR |
+| QI   | Gemma3-12B | 88.90% | 88.97% | EN, FR, ES, KO, PT, JA, DE, IT, PL, AR, TH, VN, ID |
 
 ## 🛠️ Applications in E-commerce
 
@@ -198,15 +197,6 @@ translated = translate_queries(["điện thoại", "スマートフォン", "手
 # Output: ['phone', 'smartphone', 'mobile phone']
 ```
 
-## 📊 Performance
-
-Our models achieve state-of-the-art performance on multilingual e-commerce search (unseen records, unseen languages):
-
-| Task | Model | Dev F1-Score | Test F1-Score | Languages Tested |
-|------|-------|----------|----------|------------------|
-| QC   | Gemma3-12B | 89.56% | 89.65% | EN, FR, ES, KO, PT, JA, DE, IT, PL, AR |
-| QI   | Gemma3-12B | 88.90% | 88.97% | EN, FR, ES, KO, PT, JA, DE, IT, PL, AR, TH, VN, ID |
-
 ## 📦 Custom Model Training
 
 ### Training Requirements
@@ -262,16 +252,6 @@ export MASTER_PORT=29501
 # Ensure model paths contain "gemma-3" for proper loading
 mv models/my-model models/gemma-3-my-model
 ```
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 📞 Support
-
-- **Issues**: [GitHub Issues](https://github.com/your-username/e-commerce-product-search/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/your-username/e-commerce-product-search/discussions)
-- **Email**: thanglong.nguyenho27@mail.dcu.ie
 
 ## 🙏 Acknowledgments
 
