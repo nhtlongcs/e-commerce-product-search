@@ -218,7 +218,7 @@ translated = translate_queries(["điện thoại", "スマートフォン", "手
 
 | Bài Toán | RAM | Bộ Nhớ GPU | GPU | Thời Gian Huấn Luyện |
 |----------|-----|------------|-----|----------------------|
-| Suy luận | 16GB | 16GB | 1 | - |
+| Inference | 32GB | 32GB | 1 | - |
 | Fine-tuning | 64GB | 80GB | 4 | 8-12 giờ |
 
 ### Quy trình Huấn Luyện
