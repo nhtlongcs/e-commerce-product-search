@@ -11,7 +11,7 @@
 Giải quyết bài toán tìm kiếm sản phẩm trong các nền tảng thương mại điện tử. Trong thị trường toàn cầu ngày nay, người dùng tìm kiếm sản phẩm bằng truy vấn ở nhiều ngôn ngữ khác nhau, ngôn ngữ không chính thức và thuật ngữ chuyên môn. Các hệ thống tìm kiếm truyền thống gặp khó khăn với:
 
 - **Truy vấn đa ngôn ngữ**: Người dùng tìm kiếm bằng ngôn ngữ mẹ đẻ trong khi thông tin sản phẩm có thể ở ngôn ngữ khác
-- **Trộn mã ngôn ngữ**: Truy vấn trộn nhiều ngôn ngữ (ví dụ: "smartphone màu đỏ" - tiếng Việt + tiếng Anh)
+- **Ngôn ngữ xáo trộn**: Truy vấn trộn nhiều ngôn ngữ (ví dụ: "smartphone màu đỏ" - tiếng Việt + tiếng Anh)
 - **Ngôn ngữ không chính thức**: Thuật ngữ thông tục, viết tắt và lỗi chính tả phổ biến trong truy vấn tìm kiếm
 - **Khớp độ liên quan**: Xác định xem truy vấn có khớp với danh mục sản phẩm liên quan hay sản phẩm cụ thể
 
@@ -32,7 +32,7 @@ Hệ thống này giải quyết hai vấn đề cốt lõi:
 ## 🎯 Điểm Nổi Bật
 
 - **Hỗ Trợ Đa Ngôn Ngữ**: Xử lý truy vấn ở nhiều ngôn ngữ đồng thời
-- **LLM Tối Tiến**: Fine-tuned các mô hình Gemma3-12B và Qwen
+- **LLM Mới Nhất**: Fine-tuned các mô hình Gemma3-12B và Qwen
 - **Huấn Luyện Hiệu Quả**: Fine-tuning LoRA với DeepSpeed để tối ưu bộ nhớ
 - **Sẵn Sàng Triển Khai**: Mô hình nhanh và hỗ trợ các hình thức triển khai theo Batch, dễ dàng tích hợp dưới dạng API.
 
