@@ -38,7 +38,7 @@ This system tackles two core problems:
 
 ## 📊 Performance
 
-Our models achieve state-of-the-art performance on multilingual e-commerce search (unseen records, unseen languages):
+Our models achieve state-of-the-art performance on multilingual e-commerce search (unseen records, unseen languages). Achieved the #1 in [CIKM 2025 Multilingual E-commerce Product Search Competition](https://tianchi.aliyun.com/competition/entrance/532369/rankingList).
 
 | Task | Model | Dev F1-Score | Test F1-Score | Languages Tested |
 |------|-------|----------|----------|------------------|
@@ -226,7 +226,7 @@ To train your own model, prepare your dataset in the same format as provided (`d
 
 ## 📋 Competition Results
 
-This work achieved 1st place for the **CIKM 2025 Multilingual E-commerce Product Search Competition**.
+This work achieved 1st place for the [**CIKM 2025 Multilingual E-commerce Product Search Competition**](https://tianchi.aliyun.com/competition/entrance/532369/rankingList).
 
 **Team**: DcuRAGONS - Dublin City University, Ireland
 
